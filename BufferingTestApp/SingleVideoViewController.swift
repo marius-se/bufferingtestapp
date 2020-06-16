@@ -35,6 +35,7 @@ class SingleVideoViewController: UIViewController {
         let url = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
         let playerItem = AVPlayerItem(asset: .init(url: url))
         let player = AVPlayer(playerItem: playerItem)
+        player.volume = .zero
         player.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
         player.addObserver(self, forKeyPath: "reasonForWaitingToPlay", options: [], context: nil)
         avPlayerLayer.player = player

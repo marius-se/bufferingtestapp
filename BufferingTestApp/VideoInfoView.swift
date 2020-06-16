@@ -67,10 +67,13 @@ class VideoInfoView: UIView {
         switch timeControlStatus {
         case .paused:
             timeControlStatusLabel.text = "Paused"
+            timeControlStatusLabel.backgroundColor = .systemRed
         case .playing:
             timeControlStatusLabel.text = "Playing"
+            timeControlStatusLabel.backgroundColor = .systemGreen
         case .waitingToPlayAtSpecifiedRate:
             timeControlStatusLabel.text = "Waiting"
+            timeControlStatusLabel.backgroundColor = .systemOrange
         @unknown default:
             fatalError("Unknown case")
         }
