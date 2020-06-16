@@ -20,6 +20,10 @@ class VideoInfoView: UIView {
 
     private let timeControlStatusLabel = UILabel()
     private let reasonForWaitingToPlayLabel = UILabel()
+    private let playerRateLabel = UILabel()
+    private let timebaseRateLabel = UILabel()
+    private let currentTimeLabel = UILabel()
+    private let loadedTimeRangesLabel = UILabel()
 
     init() {
         super.init(frame: .zero)
@@ -34,6 +38,10 @@ class VideoInfoView: UIView {
 
         addInfo(description: "timeControlStatus", statusLabel: timeControlStatusLabel)
         addInfo(description: "reasonForWaitingToPlay", statusLabel: reasonForWaitingToPlayLabel)
+        addInfo(description: "playerRate", statusLabel: playerRateLabel)
+        addInfo(description: "timebaseRate", statusLabel: timebaseRateLabel)
+        addInfo(description: "currentTime", statusLabel: currentTimeLabel)
+        addInfo(description: "loadedTimeRanges", statusLabel: loadedTimeRangesLabel)
 
     }
 
@@ -92,5 +100,22 @@ class VideoInfoView: UIView {
         default:
             fatalError("Unexpected case")
         }
+    }
+
+    func setPlayerRate(_ playerRate: Float) {
+        playerRateLabel.text = String(playerRate)
+    }
+
+    func setTimebaseRate(_ timebaseRate: CMTimebase) {
+        timebaseRateLabel.text = "\(timebaseRate.rate)"
+    }
+
+    func setCurrentTime(_ currentTime: CMTime) {
+        currentTimeLabel.text = currentTime.formattedString()
+    }
+
+    func setLoadedTimeRanges(_ loadedTimeRanges: [NSValue]) {
+        guard let timeRange = loadedTimeRanges.first as? CMTimeRange else { return }
+        loadedTimeRangesLabel.text = "\(timeRange.start.formattedString()) to \(timeRange.end.formattedString())"
     }
 }

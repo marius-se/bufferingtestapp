@@ -38,6 +38,17 @@ class SingleVideoViewController: UIViewController {
         player.volume = .zero
         player.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
         player.addObserver(self, forKeyPath: "reasonForWaitingToPlay", options: [], context: nil)
+        player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+        player.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
+        player.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC)),
+            queue: .main,
+            using: { [weak self] in
+                self?.videoInfoView.setCurrentTime($0)
+            }
+        )
+        player.currentItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "timebase", options: [], context: nil)
         avPlayerLayer.player = player
 
         return avPlayerLayer
@@ -49,10 +60,13 @@ class SingleVideoViewController: UIViewController {
         return videoInfoView
     }()
 
+    private var cancellables: Set<AnyCancellable> = []
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpViews()
+        setUpBindings()
     }
 
     override func viewDidLayoutSubviews() {
@@ -104,6 +118,18 @@ class SingleVideoViewController: UIViewController {
         ])
     }
 
+    private func setUpBindings() {
+        NotificationCenter
+            .default
+            .publisher(for: kCMTimebaseNotification_EffectiveRateChanged as Notification.Name)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard let currentTimebase = self.playerLayer.player?.currentItem?.timebase else { return }
+                self.videoInfoView.setTimebaseRate(currentTimebase)
+        }.store(in: &cancellables)
+    }
+
     @objc private func didTapPause() {
         playerLayer.player?.pause()
     }
@@ -117,14 +143,25 @@ class SingleVideoViewController: UIViewController {
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let player = playerLayer.player, object as AnyObject? === player else { return }
-        switch keyPath {
-        case "timeControlStatus":
-            videoInfoView.setTimeControlStatus(player.timeControlStatus)
-        case "reasonForWaitingToPlay":
-            videoInfoView.setReasonForWaitingToPlay(player.reasonForWaitingToPlay)
-        default:
-            break
+        guard let player = playerLayer.player else { return }
+        if object as AnyObject? === player {
+            switch keyPath {
+            case "timeControlStatus":
+                videoInfoView.setTimeControlStatus(player.timeControlStatus)
+            case "reasonForWaitingToPlay":
+                videoInfoView.setReasonForWaitingToPlay(player.reasonForWaitingToPlay)
+            case "rate":
+                videoInfoView.setPlayerRate(player.rate)
+            default:
+                break
+            }
+        } else if object as AnyObject? === player.currentItem {
+            switch keyPath {
+            case "loadedTimeRanges":
+                videoInfoView.setLoadedTimeRanges(player.currentItem!.loadedTimeRanges)
+            default:
+                break
+            }
         }
     }
 }

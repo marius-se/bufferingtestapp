@@ -14,6 +14,7 @@
 		29CB7FB12498D91800126FCA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29CB7FAF2498D91800126FCA /* LaunchScreen.storyboard */; };
 		29CB7FB92498DA9900126FCA /* MultiVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB7FB82498DA9900126FCA /* MultiVideoViewController.swift */; };
 		29CB7FBB2498F6E100126FCA /* VideoInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB7FBA2498F6E100126FCA /* VideoInfoView.swift */; };
+		29CB7FBD24990F8C00126FCA /* CMTime+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB7FBC24990F8C00126FCA /* CMTime+Ex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		29CB7FB22498D91800126FCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		29CB7FB82498DA9900126FCA /* MultiVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiVideoViewController.swift; sourceTree = "<group>"; };
 		29CB7FBA2498F6E100126FCA /* VideoInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoInfoView.swift; sourceTree = "<group>"; };
+		29CB7FBC24990F8C00126FCA /* CMTime+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMTime+Ex.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,10 +60,11 @@
 		29CB7FA32498D91700126FCA /* BufferingTestApp */ = {
 			isa = PBXGroup;
 			children = (
+				29CB7FBC24990F8C00126FCA /* CMTime+Ex.swift */,
 				29CB7FA42498D91700126FCA /* AppDelegate.swift */,
 				29CB7FA62498D91700126FCA /* SceneDelegate.swift */,
-				29CB7FA82498D91700126FCA /* SingleVideoViewController.swift */,
 				29CB7FBA2498F6E100126FCA /* VideoInfoView.swift */,
+				29CB7FA82498D91700126FCA /* SingleVideoViewController.swift */,
 				29CB7FB82498DA9900126FCA /* MultiVideoViewController.swift */,
 				29CB7FAD2498D91800126FCA /* Assets.xcassets */,
 				29CB7FAF2498D91800126FCA /* LaunchScreen.storyboard */,
@@ -145,6 +148,7 @@
 				29CB7FBB2498F6E100126FCA /* VideoInfoView.swift in Sources */,
 				29CB7FB92498DA9900126FCA /* MultiVideoViewController.swift in Sources */,
 				29CB7FA72498D91700126FCA /* SceneDelegate.swift in Sources */,
+				29CB7FBD24990F8C00126FCA /* CMTime+Ex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
