@@ -29,6 +29,8 @@ class SingleVideoViewController: UIViewController {
         return stackView
     }()
 
+    var obs: NSKeyValueObservation?
+
     private lazy var playerLayer: AVPlayerLayer = {
         let avPlayerLayer = AVPlayerLayer()
 
@@ -36,10 +38,11 @@ class SingleVideoViewController: UIViewController {
         let playerItem = AVPlayerItem(asset: .init(url: url))
         let player = AVPlayer(playerItem: playerItem)
         player.volume = .zero
+
         player.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
         player.addObserver(self, forKeyPath: "reasonForWaitingToPlay", options: [], context: nil)
         player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-        player.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
+
         player.addPeriodicTimeObserver(
             forInterval: CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC)),
             queue: .main,
@@ -47,8 +50,14 @@ class SingleVideoViewController: UIViewController {
                 self?.videoInfoView.setCurrentTime($0)
             }
         )
-        player.currentItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
+
         playerItem.addObserver(self, forKeyPath: "timebase", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: [], context: nil)
+        // This one is not working for some reason
+        playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: [], context: nil)
+
         avPlayerLayer.player = player
 
         return avPlayerLayer
@@ -144,7 +153,7 @@ class SingleVideoViewController: UIViewController {
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard let player = playerLayer.player else { return }
-        if object as AnyObject? === player {
+        if object is AVPlayer {
             switch keyPath {
             case "timeControlStatus":
                 videoInfoView.setTimeControlStatus(player.timeControlStatus)
@@ -155,10 +164,16 @@ class SingleVideoViewController: UIViewController {
             default:
                 break
             }
-        } else if object as AnyObject? === player.currentItem {
+        } else if object is AVPlayerItem {
             switch keyPath {
             case "loadedTimeRanges":
                 videoInfoView.setLoadedTimeRanges(player.currentItem!.loadedTimeRanges)
+            case "playbackLikelyToKeepUp":
+                videoInfoView.setIsPlaybackLikelyToKeepUp(player.currentItem!.isPlaybackLikelyToKeepUp)
+            case "playbackBufferEmpty":
+                videoInfoView.setIsPlaybackBufferEmpty(player.currentItem!.isPlaybackBufferEmpty)
+            case "playbackBufferFull":
+                videoInfoView.setIsPlaybackBufferFull(player.currentItem!.isPlaybackBufferFull)
             default:
                 break
             }

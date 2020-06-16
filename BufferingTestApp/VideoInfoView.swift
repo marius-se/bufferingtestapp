@@ -24,6 +24,9 @@ class VideoInfoView: UIView {
     private let timebaseRateLabel = UILabel()
     private let currentTimeLabel = UILabel()
     private let loadedTimeRangesLabel = UILabel()
+    private let isPlaybackLikelyToKeepUpLabel = UILabel()
+    private let isPlaybackBufferFullLabel = UILabel()
+    private let isPlaybackBufferEmptyLabel = UILabel()
 
     init() {
         super.init(frame: .zero)
@@ -42,6 +45,9 @@ class VideoInfoView: UIView {
         addInfo(description: "timebaseRate", statusLabel: timebaseRateLabel)
         addInfo(description: "currentTime", statusLabel: currentTimeLabel)
         addInfo(description: "loadedTimeRanges", statusLabel: loadedTimeRangesLabel)
+        addInfo(description: "isPlaybackLikelyToKeepUp", statusLabel: isPlaybackLikelyToKeepUpLabel)
+//        addInfo(description: "isPlaybackBufferFull", statusLabel: isPlaybackBufferFullLabel)
+        addInfo(description: "isPlaybackBufferEmpty", statusLabel: isPlaybackBufferEmptyLabel)
 
     }
 
@@ -61,9 +67,9 @@ class VideoInfoView: UIView {
         let descriptionLabel = UILabel()
         descriptionLabel.text = description
         descriptionLabel.textAlignment = .right
-        descriptionLabel.font = .systemFont(ofSize: 14, weight: .semibold)
+        descriptionLabel.font = .systemFont(ofSize: 13, weight: .semibold)
 
-        statusLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        statusLabel.font = .systemFont(ofSize: 13, weight: .regular)
 
         stackView.addArrangedSubview(descriptionLabel)
         stackView.addArrangedSubview(statusLabel)
@@ -96,7 +102,7 @@ class VideoInfoView: UIView {
         case .some(.toMinimizeStalls):
             reasonForWaitingToPlayLabel.text = "Minimizing Stalls"
         case .none:
-            reasonForWaitingToPlayLabel.text = ""
+            reasonForWaitingToPlayLabel.text = "-"
         default:
             fatalError("Unexpected case")
         }
@@ -117,5 +123,17 @@ class VideoInfoView: UIView {
     func setLoadedTimeRanges(_ loadedTimeRanges: [NSValue]) {
         guard let timeRange = loadedTimeRanges.first as? CMTimeRange else { return }
         loadedTimeRangesLabel.text = "\(timeRange.start.formattedString()) to \(timeRange.end.formattedString())"
+    }
+
+    func setIsPlaybackLikelyToKeepUp(_ isPlaybackLikelyToKeepUp: Bool) {
+        isPlaybackLikelyToKeepUpLabel.text = String(isPlaybackLikelyToKeepUp)
+    }
+
+    func setIsPlaybackBufferFull(_ isPlaybackBufferFull: Bool) {
+        isPlaybackBufferFullLabel.text = String(isPlaybackBufferFull)
+    }
+
+    func setIsPlaybackBufferEmpty(_ isPlaybackBufferEmpty: Bool) {
+        isPlaybackBufferEmptyLabel.text = String(isPlaybackBufferEmpty)
     }
 }
