@@ -108,32 +108,36 @@ class VideoInfoView: UIView {
         }
     }
 
-    func setPlayerRate(_ playerRate: Float) {
-        playerRateLabel.text = String(playerRate)
+    func setPlayerRate(_ playerRate: Float?) {
+        playerRateLabel.text = playerRate != nil ? String(playerRate!) : "-"
     }
 
-    func setTimebaseRate(_ timebaseRate: CMTimebase) {
-        timebaseRateLabel.text = "\(timebaseRate.rate)"
+    func setTimebaseRate(_ timebaseRate: CMTimebase?) {
+        timebaseRateLabel.text = timebaseRate != nil ? "\(timebaseRate!.rate)" : "-"
     }
 
-    func setCurrentTime(_ currentTime: CMTime) {
-        currentTimeLabel.text = currentTime.formattedString()
+    func setCurrentTime(_ currentTime: CMTime?) {
+        currentTimeLabel.text = currentTime != nil ? currentTime!.formattedString() : "-"
     }
 
-    func setLoadedTimeRanges(_ loadedTimeRanges: [NSValue]) {
+    func setLoadedTimeRanges(_ loadedTimeRanges: [NSValue]?) {
+        guard let loadedTimeRanges = loadedTimeRanges else {
+            loadedTimeRangesLabel.text = "-"
+            return
+        }
         guard let timeRange = loadedTimeRanges.first as? CMTimeRange else { return }
         loadedTimeRangesLabel.text = "\(timeRange.start.formattedString()) to \(timeRange.end.formattedString())"
     }
 
-    func setIsPlaybackLikelyToKeepUp(_ isPlaybackLikelyToKeepUp: Bool) {
-        isPlaybackLikelyToKeepUpLabel.text = String(isPlaybackLikelyToKeepUp)
+    func setIsPlaybackLikelyToKeepUp(_ isPlaybackLikelyToKeepUp: Bool?) {
+        isPlaybackLikelyToKeepUpLabel.text = isPlaybackLikelyToKeepUp != nil ? String(isPlaybackLikelyToKeepUp!) : "-"
     }
 
-    func setIsPlaybackBufferFull(_ isPlaybackBufferFull: Bool) {
-        isPlaybackBufferFullLabel.text = String(isPlaybackBufferFull)
+    func setIsPlaybackBufferFull(_ isPlaybackBufferFull: Bool?) {
+        isPlaybackBufferFullLabel.text = isPlaybackBufferFull != nil ? String(isPlaybackBufferFull!) : "-"
     }
 
-    func setIsPlaybackBufferEmpty(_ isPlaybackBufferEmpty: Bool) {
-        isPlaybackBufferEmptyLabel.text = String(isPlaybackBufferEmpty)
+    func setIsPlaybackBufferEmpty(_ isPlaybackBufferEmpty: Bool?) {
+        isPlaybackBufferEmptyLabel.text = isPlaybackBufferEmpty != nil ? String(isPlaybackBufferEmpty!) : "-"
     }
 }

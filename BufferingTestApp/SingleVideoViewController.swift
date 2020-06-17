@@ -11,6 +11,9 @@ import Combine
 import AVKit
 
 class SingleVideoViewController: UIViewController {
+    // MARK: - Configuration
+    private let testVideoURL = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
+
     // MARK: - Declaration
     private lazy var playerContainerView: UIView = {
         let view = UIView()
@@ -29,37 +32,11 @@ class SingleVideoViewController: UIViewController {
         return stackView
     }()
 
-    var obs: NSKeyValueObservation?
-
     private lazy var playerLayer: AVPlayerLayer = {
         let avPlayerLayer = AVPlayerLayer()
-
-        let url = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
-        let playerItem = AVPlayerItem(asset: .init(url: url))
-        let player = AVPlayer(playerItem: playerItem)
+        let player = AVPlayer()
         player.volume = .zero
-
-        player.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
-        player.addObserver(self, forKeyPath: "reasonForWaitingToPlay", options: [], context: nil)
-        player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-
-        player.addPeriodicTimeObserver(
-            forInterval: CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC)),
-            queue: .main,
-            using: { [weak self] in
-                self?.videoInfoView.setCurrentTime($0)
-            }
-        )
-
-        playerItem.addObserver(self, forKeyPath: "timebase", options: [], context: nil)
-        playerItem.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
-        playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: [], context: nil)
-        playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: [], context: nil)
-        // This one is not working for some reason
-        playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: [], context: nil)
-
         avPlayerLayer.player = player
-
         return avPlayerLayer
     }()
 
@@ -69,6 +46,12 @@ class SingleVideoViewController: UIViewController {
         return videoInfoView
     }()
 
+    private var currentTimeObserver: Any?
+
+    private var observersAreActive: Bool = false
+
+    private var backupPlayerItem: AVPlayerItem?
+
     private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Lifecycle
@@ -76,6 +59,28 @@ class SingleVideoViewController: UIViewController {
         super.viewDidLoad()
         setUpViews()
         setUpBindings()
+        resetPlayer()
+        resetVideoInfoView()
+        setUpObservers()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        if let player = playerLayer.player {
+            player.pause()
+            tearDownObservers()
+            backupPlayerItem = player.currentItem
+            player.replaceCurrentItem(with: nil)
+        }
+
+        super.viewDidDisappear(animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let player = playerLayer.player, let backupPlayerItem = backupPlayerItem {
+            player.replaceCurrentItem(with: backupPlayerItem)
+            setUpObservers()
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -89,6 +94,12 @@ class SingleVideoViewController: UIViewController {
     private func setUpViews() {
         view.backgroundColor = .systemBackground
         navigationItem.title = "Test single video"
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .refresh,
+            target: self,
+            action: #selector(didTapResetButton)
+        )
 
         let pauseButton = UIButton()
         pauseButton.setTitle("PAUSE", for: .normal)
@@ -139,6 +150,71 @@ class SingleVideoViewController: UIViewController {
         }.store(in: &cancellables)
     }
 
+    private func setUpObservers() {
+        guard let player = playerLayer.player,
+            let playerItem = player.currentItem,
+            observersAreActive == false else { return }
+        player.addObserver(self, forKeyPath: "timeControlStatus", options: [], context: nil)
+        player.addObserver(self, forKeyPath: "reasonForWaitingToPlay", options: [], context: nil)
+        player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+
+        currentTimeObserver = player.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC)),
+            queue: .main,
+            using: { [weak self] in
+                self?.videoInfoView.setCurrentTime($0)
+            }
+        )
+
+        playerItem.addObserver(self, forKeyPath: "timebase", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "loadedTimeRanges", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: [], context: nil)
+        playerItem.addObserver(self, forKeyPath: "playbackBufferEmpty", options: [], context: nil)
+        // This one is not working for some reason
+        playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: [], context: nil)
+
+        observersAreActive = true
+    }
+
+    private func tearDownObservers() {
+        guard let player = playerLayer.player,
+            let playerItem = player.currentItem,
+            observersAreActive == true else { return }
+        player.removeObserver(self, forKeyPath: "timeControlStatus")
+        player.removeObserver(self, forKeyPath: "reasonForWaitingToPlay")
+        player.removeObserver(self, forKeyPath: "rate")
+        if let currentTimeObserver = currentTimeObserver {
+            player.removeTimeObserver(currentTimeObserver)
+            self.currentTimeObserver = nil
+        }
+
+        playerItem.removeObserver(self, forKeyPath: "timebase")
+        playerItem.removeObserver(self, forKeyPath: "loadedTimeRanges")
+        playerItem.removeObserver(self, forKeyPath: "playbackLikelyToKeepUp")
+        playerItem.removeObserver(self, forKeyPath: "playbackBufferEmpty")
+        playerItem.removeObserver(self, forKeyPath: "playbackBufferFull")
+
+        observersAreActive = false
+
+    }
+
+    private func resetPlayer() {
+        guard let player = playerLayer.player else { return }
+        player.pause()
+        player.replaceCurrentItem(with: AVPlayerItem(url: testVideoURL))
+    }
+
+    private func resetVideoInfoView() {
+        videoInfoView.setTimeControlStatus(.paused)
+        videoInfoView.setReasonForWaitingToPlay(nil)
+        videoInfoView.setPlayerRate(nil)
+        videoInfoView.setTimebaseRate(nil)
+        videoInfoView.setCurrentTime(nil)
+        videoInfoView.setLoadedTimeRanges(nil)
+        videoInfoView.setIsPlaybackLikelyToKeepUp(nil)
+        videoInfoView.setIsPlaybackBufferEmpty(nil)
+    }
+
     @objc private func didTapPause() {
         playerLayer.player?.pause()
     }
@@ -149,6 +225,13 @@ class SingleVideoViewController: UIViewController {
 
     @objc private func didTapPlayImmediately() {
         playerLayer.player?.playImmediately(atRate: 1)
+    }
+
+    @objc private func didTapResetButton() {
+        tearDownObservers()
+        resetPlayer()
+        resetVideoInfoView()
+        setUpObservers()
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
