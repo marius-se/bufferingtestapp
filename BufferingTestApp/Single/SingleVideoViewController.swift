@@ -54,6 +54,10 @@ class SingleVideoViewController: UIViewController {
 
     private var cancellables: Set<AnyCancellable> = []
 
+    deinit {
+        tearDownObservers()
+    }
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()

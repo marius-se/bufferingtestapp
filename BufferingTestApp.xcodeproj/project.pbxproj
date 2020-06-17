@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		29936A092499F2A8000ED51C /* VideoControlCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29936A082499F2A8000ED51C /* VideoControlCellView.swift */; };
+		29A67991249A584A00DB652F /* VideoControlCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A67990249A584A00DB652F /* VideoControlCellViewModel.swift */; };
 		29CB7FA52498D91700126FCA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB7FA42498D91700126FCA /* AppDelegate.swift */; };
 		29CB7FA72498D91700126FCA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB7FA62498D91700126FCA /* SceneDelegate.swift */; };
 		29CB7FA92498D91700126FCA /* SingleVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB7FA82498D91700126FCA /* SingleVideoViewController.swift */; };
@@ -18,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		29936A082499F2A8000ED51C /* VideoControlCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoControlCellView.swift; sourceTree = "<group>"; };
+		29A67990249A584A00DB652F /* VideoControlCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoControlCellViewModel.swift; sourceTree = "<group>"; };
 		29CB7FA12498D91700126FCA /* BufferingTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BufferingTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29CB7FA42498D91700126FCA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		29CB7FA62498D91700126FCA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,6 +45,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		29936A062499F272000ED51C /* Single */ = {
+			isa = PBXGroup;
+			children = (
+				29CB7FBA2498F6E100126FCA /* VideoInfoView.swift */,
+				29CB7FA82498D91700126FCA /* SingleVideoViewController.swift */,
+			);
+			path = Single;
+			sourceTree = "<group>";
+		};
+		29936A072499F286000ED51C /* Multi */ = {
+			isa = PBXGroup;
+			children = (
+				29CB7FB82498DA9900126FCA /* MultiVideoViewController.swift */,
+				29936A082499F2A8000ED51C /* VideoControlCellView.swift */,
+				29A67990249A584A00DB652F /* VideoControlCellViewModel.swift */,
+			);
+			path = Multi;
+			sourceTree = "<group>";
+		};
 		29CB7F982498D91700126FCA = {
 			isa = PBXGroup;
 			children = (
@@ -63,9 +86,8 @@
 				29CB7FBC24990F8C00126FCA /* CMTime+Ex.swift */,
 				29CB7FA42498D91700126FCA /* AppDelegate.swift */,
 				29CB7FA62498D91700126FCA /* SceneDelegate.swift */,
-				29CB7FBA2498F6E100126FCA /* VideoInfoView.swift */,
-				29CB7FA82498D91700126FCA /* SingleVideoViewController.swift */,
-				29CB7FB82498DA9900126FCA /* MultiVideoViewController.swift */,
+				29936A062499F272000ED51C /* Single */,
+				29936A072499F286000ED51C /* Multi */,
 				29CB7FAD2498D91800126FCA /* Assets.xcassets */,
 				29CB7FAF2498D91800126FCA /* LaunchScreen.storyboard */,
 				29CB7FB22498D91800126FCA /* Info.plist */,
@@ -144,10 +166,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				29CB7FA92498D91700126FCA /* SingleVideoViewController.swift in Sources */,
+				29936A092499F2A8000ED51C /* VideoControlCellView.swift in Sources */,
 				29CB7FA52498D91700126FCA /* AppDelegate.swift in Sources */,
 				29CB7FBB2498F6E100126FCA /* VideoInfoView.swift in Sources */,
 				29CB7FB92498DA9900126FCA /* MultiVideoViewController.swift in Sources */,
 				29CB7FA72498D91700126FCA /* SceneDelegate.swift in Sources */,
+				29A67991249A584A00DB652F /* VideoControlCellViewModel.swift in Sources */,
 				29CB7FBD24990F8C00126FCA /* CMTime+Ex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
